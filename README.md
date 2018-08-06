@@ -9,3 +9,14 @@ http://localhost:8080/rest/songfinder?songname=bohemian&token=BQCfo0xRZrlgxDWfCs
 ### vert.x
 ### unirest
 ### gson
+
+# How to run
+
+           /*
+            * mvn clean compile
+            * mvn clean package
+            * java -jar target/spotifypreview-1.0.0-SNAPSHOT-fat.jar
+            *
+            * http://localhost:8080/rest/songfinder?songname=californication&token=ACCESS_TOKEN
+            */
+            

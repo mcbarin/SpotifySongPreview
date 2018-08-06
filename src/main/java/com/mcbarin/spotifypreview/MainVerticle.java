@@ -4,6 +4,9 @@ import com.mcbarin.spotifypreview.models.SearchResponse;
 import io.vertx.core.AbstractVerticle;
 import io.vertx.core.http.HttpServerRequest;
 import io.vertx.ext.web.Router;
+import com.mcbarin.spotifypreview.NetworkManager;
+
+import java.util.Objects;
 
 public class MainVerticle extends AbstractVerticle {
 
@@ -20,25 +23,41 @@ public class MainVerticle extends AbstractVerticle {
             String token = req.getParam("token");
 
             SearchResponse searchResponse = NetworkManager.getSearchResults(songName, token);
-            if (searchResponse != null) {
-                String previewUrl = searchResponse.getTracks().getItems().get(0).getPreviewUrl();
 
-                req.response()
-                    .putHeader("content-type", "text/html")
-                    .end(getPreviewResponse(previewUrl));
+            String previewResponseMessage = null;
+
+            if (searchResponse != null) {
+
+                if (searchResponse.getTracks().getItems().size() != 0) {
+                    String previewUrl = searchResponse.getTracks().getItems().get(0).getPreviewUrl();
+
+                    // Song found and it has a preview.
+                    if (previewUrl != null) {
+                        req.response()
+                            .putHeader("content-type", "text/html")
+                            .end(getPreviewResponse(previewUrl));
+                    } else {
+                        // Song found but there is no preview.
+                        previewResponseMessage = "Şarkıya ait bir ses örneği bulunamadı";
+                    }
+                } else {
+                    // Song not found.
+                    previewResponseMessage = "Şarkı bulunamadı.";
+                }
             } else {
-                req.response().putHeader("content-type", "text/html").end("Şarkı bulunamadı.");
+                previewResponseMessage = "Bir hata oluştu.";
             }
 
+            if (!Objects.equals(previewResponseMessage, null)) {
+                req.response().putHeader("content-type", "text/html; charset=utf-8").end(previewResponseMessage);
+            }
         });
 
         vertx.createHttpServer().requestHandler(router::accept).listen(8080);
 
-//        http://localhost:8080/rest/songfinder?songname=californication&token=BQCfo0xRZrlgxDWfCslsU52GCQ-cQ6VnXCFQ4-edgs9q3zGLItmPKxnAeHxwscEBx7sJKAcFkVqlFABSWbA
     }
 
     /**
-     *
      * @param url
      * @return HTML content of an audio player.
      */
