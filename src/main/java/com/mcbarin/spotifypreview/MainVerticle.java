@@ -4,7 +4,6 @@ import com.mcbarin.spotifypreview.models.SearchResponse;
 import io.vertx.core.AbstractVerticle;
 import io.vertx.core.http.HttpServerRequest;
 import io.vertx.ext.web.Router;
-import com.mcbarin.spotifypreview.NetworkManager;
 
 import java.util.Objects;
 

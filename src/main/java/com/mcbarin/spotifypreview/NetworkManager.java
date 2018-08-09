@@ -7,11 +7,6 @@ import com.mashape.unirest.http.Unirest;
 import com.mashape.unirest.http.exceptions.UnirestException;
 import com.mcbarin.spotifypreview.models.SearchResponse;
 
-import java.io.UnsupportedEncodingException;
-import java.net.URI;
-import java.net.URLEncoder;
-import java.nio.charset.StandardCharsets;
-
 public class NetworkManager {
 
     private static NetworkManager ourInstance = new NetworkManager();
@@ -25,7 +20,7 @@ public class NetworkManager {
     static SearchResponse getSearchResults(String songname, String token) {
 
         String uri = "search";
-        String searchUrl = String.format("%s/%s", BASE_URL, uri, songname);
+        String searchUrl = String.format("%s/%s", BASE_URL, uri);
 
         try {
             HttpResponse<String> response = Unirest.get(searchUrl)
