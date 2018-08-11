@@ -2,7 +2,7 @@ package com.mcbarin.spotifypreview.models;
 
 import com.google.gson.annotations.SerializedName;
 
-public class SearchResponse {
+public class SearchResponse implements BaseResponse {
 
     @SerializedName("tracks")
     private Track tracks;

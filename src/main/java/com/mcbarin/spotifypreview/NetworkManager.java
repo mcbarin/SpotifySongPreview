@@ -5,19 +5,20 @@ import com.google.gson.GsonBuilder;
 import com.mashape.unirest.http.HttpResponse;
 import com.mashape.unirest.http.Unirest;
 import com.mashape.unirest.http.exceptions.UnirestException;
+import com.mcbarin.spotifypreview.models.BaseErrorResponse;
 import com.mcbarin.spotifypreview.models.SearchResponse;
 
-public class NetworkManager {
+class NetworkManager {
 
     private static NetworkManager ourInstance = new NetworkManager();
 
-    public static NetworkManager getInstance() {
+    static NetworkManager getInstance() {
         return ourInstance;
     }
 
-    private static final String BASE_URL = "https://api.spotify.com/v1";
+    private final String BASE_URL = "https://api.spotify.com/v1";
 
-    static SearchResponse getSearchResults(String songname, String token) {
+    void getSearchResults(String songname, String token, NetworkListener listener) {
 
         String uri = "search";
         String searchUrl = String.format("%s/%s", BASE_URL, uri);
@@ -35,14 +36,23 @@ public class NetworkManager {
 
             Gson gson = new GsonBuilder().create();
 
-            // Deserialize response body and return it.
-            return gson.fromJson(response.getBody(), SearchResponse.class);
-
+            if (isSuccessStatusCode(response.getStatus())) {
+                SearchResponse searchResponse = gson.fromJson(response.getBody(), SearchResponse.class);
+                listener.onSuccess(searchResponse);
+            } else {
+                BaseErrorResponse errorResponse = gson.fromJson(response.getBody(), BaseErrorResponse.class);
+                listener.onFail(errorResponse);
+            }
 
         } catch (UnirestException e) {
             e.printStackTrace();
-            return null;
+            listener.onFail(null);
         }
+    }
+
+    // 2xx status codes are accepted as successful requests.
+    private boolean isSuccessStatusCode(int status) {
+        return (status >= 200 && status < 300);
     }
 }
 
